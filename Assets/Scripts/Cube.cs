@@ -11,6 +11,8 @@ public class Cube : MonoBehaviour, ISeparable
     private readonly float _explosionForce = 500f;
     private readonly float _explosionRadius = 10f;
 
+    public float ForceModifier => 1 / transform.localScale.x;
+
     public event Action<ISeparable> Separating;
 
     public int SeparationChance
@@ -51,7 +53,7 @@ public class Cube : MonoBehaviour, ISeparable
 
             if (rb != null)
             {
-                rb.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
+                rb.AddExplosionForce(_explosionForce * ForceModifier, transform.position, _explosionRadius);
             }
         }
     }
