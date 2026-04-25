@@ -1,41 +1,40 @@
+using Assets.Scripts.Services;
 using Assets.Scripts.Types.Interfaces;
 using Assets.Scripts.Utils;
 using System;
-using System.Collections;
 using UnityEngine;
 
 public class Cube : MonoBehaviour, ISeparable
 {
-    public int separationChance = 100;
-
-    public Action<Cube> SuccessDestroyed;
-
     private int _separationChance = 100;
 
-    private readonly int _explosionDelay = 2;
     private readonly float _explosionForce = 500f;
     private readonly float _explosionRadius = 10f;
 
-    public int SeparationChance => _separationChance;
+    public event Action<ISeparable> Separating;
 
-    public void Destroy()
+    public int SeparationChance
     {
-        Disappear();
-
-        if (RandomUtils.IsSuccess(separationChance))
-        {
-            SuccessDestroyed?.Invoke(this);
-            StartCoroutine(ExplodeAndDestroy());
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        get => _separationChance;
+        set => _separationChance = value;
     }
 
-    private IEnumerator ExplodeAndDestroy()
+    private void OnEnable()
     {
-        yield return new WaitForSeconds(_explosionDelay);
+        ObjectsService<ISeparable>.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        ObjectsService<ISeparable>.Unregister(this);
+    }
+
+    public void TrySeparate()
+    {
+        if (RandomUtils.IsSuccess(SeparationChance))
+        {
+            Separating?.Invoke(this);
+        }
 
         ApplyExplosion();
 
@@ -57,9 +56,24 @@ public class Cube : MonoBehaviour, ISeparable
         }
     }
 
-    private void Disappear()
+    public ISeparable Clone()
     {
-        MeshRenderer renderer = GetComponent<MeshRenderer>();
-        renderer.enabled = false;
+        var clone = Instantiate(this, transform.position, Quaternion.identity);
+
+        clone.transform.localScale = transform.localScale / 2;
+
+        clone.SeparationChance = _separationChance / 2;
+
+        Color randomColor = new(
+            UnityEngine.Random.value,
+            UnityEngine.Random.value,
+            UnityEngine.Random.value
+        );
+
+        Renderer renderer = clone.GetComponent<Renderer>();
+
+        renderer.material.color = randomColor;
+
+        return clone;
     }
 }

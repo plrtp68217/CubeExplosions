@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace Assets.Scripts.Utils
+﻿namespace Assets.Scripts.Utils
 {
     public static class RandomUtils
     {
-        private static readonly Random _random = new();
+        private static readonly System.Random _random = new();
 
         private static readonly int _minChanceValue = 0;
         private static readonly int _maxChanceValue = 100;
