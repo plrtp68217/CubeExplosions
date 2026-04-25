@@ -10,7 +10,7 @@ public class Spawner : MonoBehaviour
 
     private void Start()
     {
-        var objects = ObjectsService<Cube>.Objects;
+        var objects = ObjectsService<ISeparable>.Objects;
 
         foreach (var obj in objects)
         {
@@ -18,17 +18,17 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    private void SpawnObjects(ISeparable separable)
+    private void SpawnObjects(ISeparable parentSeparable)
     {
-        separable.Separating -= SpawnObjects;
-
         int objectsCount = RandomUtils.GetValue(_minObjectsValue, _maxObjectsValue);
 
         for (int i = 0; i < objectsCount; i++)
         {
-            ISeparable newSeparable = separable.Clone();
+            ISeparable newSeparable = parentSeparable.Clone();
 
             newSeparable.Separating += SpawnObjects;
         }
+
+        parentSeparable.Separating -= SpawnObjects;
     }
 }

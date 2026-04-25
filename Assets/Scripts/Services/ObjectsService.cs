@@ -10,12 +10,15 @@ namespace Assets.Scripts.Services
     public static class ObjectsService<T>
     {
         private static readonly List<T> _objects = new();
+
         public static List<T> Objects => _objects;
 
         public static void Register(T obj)
         {
-            if (!_objects.Contains(obj))
+            if (_objects.Contains(obj) == false)
+            {
                 _objects.Add(obj);
+            }
         }
 
         public static void Unregister(T obj)
