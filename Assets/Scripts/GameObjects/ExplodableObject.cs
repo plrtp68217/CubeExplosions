@@ -8,7 +8,7 @@ public class ExplodableObject : MonoBehaviour
 
     private int _separationChance = 100;
 
-    public bool CanSeparating => RandomUtils.IsSuccess(_separationChance);
+    public bool CanSeparate => RandomUtils.IsSuccess(_separationChance);
     public float ForceModifier => 1 / transform.localScale.x;
 
     public ExplodableObject Clone()

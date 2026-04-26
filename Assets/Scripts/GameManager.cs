@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -24,6 +26,8 @@ public class GameManager : MonoBehaviour
 
         GameObject objectAtPosition = _raycaster.GetObjectAtPosition(pressPosition);
 
+        List<ExplodableObject> objectsToExplode;
+
         objectAtPosition.TryGetComponent<ExplodableObject>(out var explodableObject);
 
         if (explodableObject == null)
@@ -31,22 +35,22 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (explodableObject.CanSeparating)
+        if (explodableObject.CanSeparate)
         {
-            var spawnedObjects = _spawner.SpawnObjects(explodableObject);
+            objectsToExplode = _spawner.SpawnObjects(explodableObject);
 
-            _explodableObjectsService.Register(spawnedObjects);
-
-            _exploder.Explode(spawnedObjects, explodableObject);
+            _explodableObjectsService.Register(objectsToExplode);
         }
         else
         {
-            var neighbors = _explodableObjectsService.GetNeighbors(explodableObject);
-
-            _exploder.Explode(neighbors, explodableObject);
+            objectsToExplode = _explodableObjectsService.GetNeighbors(explodableObject);
         }
 
-        _explodableObjectsService.UnRegister(explodableObject);
+        if (objectsToExplode.Count > 0)
+        {
+            _exploder.Explode(objectsToExplode, explodableObject);
+            _explodableObjectsService.UnRegister(explodableObject);
+        }
 
         Destroy(explodableObject.gameObject);
     }
