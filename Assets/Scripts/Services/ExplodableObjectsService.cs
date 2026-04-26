@@ -4,12 +4,19 @@ using UnityEngine;
 
 public class ExplodableObjectsService : MonoBehaviour
 {
-    private readonly List<ExplodableObject> _objects = new();
-
+    [SerializeField] private List<ExplodableObject> _objects = new();
 
     public List<ExplodableObject> GetNeighbors(ExplodableObject obj)
     {
-        return _objects.Where(x => x != obj).ToList();
+        return _objects.Where(neighbor => neighbor != obj).ToList();
+    }
+
+    public void Register(List<ExplodableObject> objects)
+    {
+        foreach (var obj in objects)
+        {
+            Register(obj);
+        }
     }
 
     public void Register(ExplodableObject obj)

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Exploader : MonoBehaviour
+public class Exploder : MonoBehaviour
 {
     private readonly float _explosionForce = 100f;
     private readonly float _explosionRadius = 10f;

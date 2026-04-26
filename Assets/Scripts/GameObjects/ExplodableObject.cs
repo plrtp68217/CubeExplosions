@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class ExplodableObject : MonoBehaviour
 {
-    [SerializeField] private ExplodableObjectsService _explodableObjectsService;
-
     private readonly int _minChanceValue = 0;
     private readonly int _maxChanceValue = 100;
 
@@ -12,32 +10,6 @@ public class ExplodableObject : MonoBehaviour
 
     public bool CanSeparating => RandomUtils.IsSuccess(_separationChance);
     public float ForceModifier => 1 / transform.localScale.x;
-
-    private void OnEnable()
-    {
-        _explodableObjectsService.Register(this);
-    }
-
-    private void OnDisable()
-    {
-        _explodableObjectsService.UnRegister(this);
-    }
-
-    private void SetSeparationChance(int chance)
-    {
-        if (chance < _minChanceValue)
-        {
-            _separationChance = _minChanceValue;
-        }
-        else if (chance > _maxChanceValue)
-        {
-            _separationChance = _maxChanceValue;
-        }
-        else
-        {
-            _separationChance = chance;
-        }
-    }
 
     public ExplodableObject Clone()
     {
@@ -56,5 +28,10 @@ public class ExplodableObject : MonoBehaviour
         );
 
         return clone;
+    }
+
+    private void SetSeparationChance(int chance)
+    {
+        _separationChance = Mathf.Clamp(chance, _minChanceValue, _maxChanceValue);
     }
 }
