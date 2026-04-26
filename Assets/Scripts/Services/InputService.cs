@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class InputService : MonoBehaviour
 {
-    public const int PressCode = 0;
+    private const int PressCode = 0;
 
-    public Action Pressed;
+    public event Action Pressed;
 
     public Vector3 PressPosition => Input.mousePosition;
 

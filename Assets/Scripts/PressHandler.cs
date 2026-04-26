@@ -1,7 +1,5 @@
 using Assets.Scripts.Types;
-using Assets.Scripts.Types.Interfaces;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PressHandler : MonoBehaviour
 {
@@ -35,8 +33,8 @@ public class PressHandler : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, _maxDistance, _hitLayers))
         {
-            ISeparable separable = hit.collider.GetComponent<ISeparable>();
-            separable?.TrySeparate();
+            var obj = hit.collider.GetComponent<ExplodableObject>();
+            obj.TrySeparate();
         }
     }
 }
