@@ -1,7 +1,8 @@
 using Assets.Scripts.Types;
+using System;
 using UnityEngine;
 
-public class PressHandler : MonoBehaviour
+public class Raycaster : MonoBehaviour
 {
     [SerializeField] private InputService _inputService;
 
@@ -9,6 +10,8 @@ public class PressHandler : MonoBehaviour
     [SerializeField] private float _maxDistance = Mathf.Infinity;
 
     private LayerMask _hitLayers;
+
+    public event Action<ExplodableObject> Exploading;
 
     private void Awake()
     {
@@ -34,7 +37,8 @@ public class PressHandler : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, _maxDistance, _hitLayers))
         {
             var obj = hit.collider.GetComponent<ExplodableObject>();
-            obj.TrySeparate();
+
+            Exploading?.Invoke(obj);
         }
     }
 }

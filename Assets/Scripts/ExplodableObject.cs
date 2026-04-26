@@ -1,22 +1,16 @@
-using Assets.Scripts.Services;
 using Assets.Scripts.Utils;
-using System;
 using UnityEngine;
 
 public class ExplodableObject : MonoBehaviour
 {
     [SerializeField] private ExplodableObjectsService _explodableObjectsService;
 
-    private int _separationChance = 100;
-
     private readonly int _minChanceValue = 0;
     private readonly int _maxChanceValue = 100;
 
-    private readonly float _explosionForce = 100f;
-    private readonly float _explosionRadius = 10f;
+    private int _separationChance = 100;
 
-    public event Action<ExplodableObject> Separating;
-
+    public bool CanSeparating => RandomUtils.IsSuccess(_separationChance);
     public float ForceModifier => 1 / transform.localScale.x;
 
     private void OnEnable()
@@ -26,46 +20,7 @@ public class ExplodableObject : MonoBehaviour
 
     private void OnDisable()
     {
-        _explodableObjectsService.Unregister(this);
-    }
-
-    public void TrySeparate()
-    {
-        if (RandomUtils.IsSuccess(_separationChance))
-        {
-            Separating?.Invoke(this);
-        }
-        else
-        {
-            GlobalExplode();
-        }
-
-        Destroy(gameObject);
-    }
-
-    public void SelfExplode()
-    {
-        TryGetComponent<Rigidbody>(out var rb);
-
-        if (rb != null)
-        {
-            rb.AddExplosionForce(_explosionForce * ForceModifier, transform.position, _explosionRadius);
-        }
-    }
-
-    private void GlobalExplode()
-    {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius);
-
-        foreach (Collider hit in colliders)
-        {
-            hit.TryGetComponent<Rigidbody>(out var rb);
-
-            if (rb != null)
-            {
-                rb.AddExplosionForce(_explosionForce * ForceModifier, transform.position, _explosionRadius);
-            }
-        }
+        _explodableObjectsService.UnRegister(this);
     }
 
     private void SetSeparationChance(int chance)
@@ -92,15 +47,13 @@ public class ExplodableObject : MonoBehaviour
 
         clone.SetSeparationChance(_separationChance / 2);
 
-        Color randomColor = new(
-            UnityEngine.Random.value,
-            UnityEngine.Random.value,
-            UnityEngine.Random.value
-        );
-
         Renderer renderer = clone.GetComponent<Renderer>();
 
-        renderer.material.color = randomColor;
+        renderer.material.color = new Color(
+            Random.value,
+            Random.value,
+            Random.value
+        );
 
         return clone;
     }
