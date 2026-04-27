@@ -3,23 +3,27 @@ using UnityEngine;
 
 public class Exploder : MonoBehaviour
 {
-    private readonly float _explosionForce = 100f;
-    private readonly float _explosionRadius = 10f;
-
-    public void Explode(List<ExplodableObject> objects, ExplodableObject exploadingObject)
+    [SerializeField] private float _explosionForce = 100f;
+    [SerializeField] private float _explosionRadius = 10f;
+    
+    public void ExplodeOverlap(Vector3 position)
     {
-        foreach (ExplodableObject obj in objects)
+        Collider[] colliders = Physics.OverlapSphere(position, _explosionRadius);
+        
+        foreach (Collider collider in colliders)
         {
-            obj.TryGetComponent<Rigidbody>(out var rb);
-
-            if (rb != null)
+            if (collider.TryGetComponent(out ExplodableObject explodable))
             {
-                rb.AddExplosionForce(
-                    _explosionForce * exploadingObject.ForceModifier,
-                    exploadingObject.transform.position, 
-                    _explosionRadius
-                );
+                explodable.ApplyExplosion(position, _explosionForce, _explosionRadius);
             }
+        }
+    }
+    
+    public void ExplodeList(List<ExplodableObject> explodableObjects, Vector3 position)
+    {
+        foreach (ExplodableObject explodable in explodableObjects)
+        {
+            explodable.ApplyExplosion(position, _explosionForce, _explosionRadius);
         }
     }
 }

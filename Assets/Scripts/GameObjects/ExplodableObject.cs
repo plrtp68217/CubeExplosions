@@ -8,30 +8,27 @@ public class ExplodableObject : MonoBehaviour
 
     private int _separationChance = 100;
 
+    public int SeparationChance => _separationChance;
     public bool CanSeparate => RandomUtils.IsSuccess(_separationChance);
-    public float ForceModifier => 1 / transform.localScale.x;
 
-    public ExplodableObject Clone()
+    public void ApplyExplosion(Vector3 position, float force, float radius)
     {
-        var clone = Instantiate(this, transform.position, Quaternion.identity);
-
-        clone.transform.localScale = transform.localScale / 2;
-
-        clone.SetSeparationChance(_separationChance / 2);
-
-        Renderer renderer = clone.GetComponent<Renderer>();
-
-        renderer.material.color = new Color(
-            Random.value,
-            Random.value,
-            Random.value
-        );
-
-        return clone;
+        if (TryGetComponent(out Rigidbody rigidbody))
+        {
+            rigidbody.AddExplosionForce(force / transform.localScale.x, position, radius);
+        }
     }
 
-    private void SetSeparationChance(int chance)
+    public void SetSeparationChance(int chance)
     {
         _separationChance = Mathf.Clamp(chance, _minChanceValue, _maxChanceValue);
+    }
+
+    public void SetRandomColor()
+    {
+        if (TryGetComponent(out Renderer renderer))
+        {
+            renderer.material.color = Random.ColorHSV();
+        }
     }
 }

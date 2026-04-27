@@ -5,7 +5,7 @@ public class InputService : MonoBehaviour
 {
     private const int PressCode = 0;
 
-    public event Action Pressed;
+    public event Action<Vector3> Pressed;
 
     public Vector3 PressPosition => Input.mousePosition;
 
@@ -15,7 +15,7 @@ public class InputService : MonoBehaviour
 
         if (isPressed)
         {
-            Pressed?.Invoke();
+            Pressed?.Invoke(PressPosition);
         }
     }
 }
